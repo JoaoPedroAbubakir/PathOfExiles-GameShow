@@ -63,7 +63,7 @@ export async function PUT(request: NextRequest) {
   if (poolIndex === -1) {
     return NextResponse.json({ error: 'Pool not found' }, { status: 404 });
   }
-
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const newQuestions = records.map((record: any) => ({
     id: Date.now().toString() + Math.random().toString(36).slice(2),
     text: record.text,
