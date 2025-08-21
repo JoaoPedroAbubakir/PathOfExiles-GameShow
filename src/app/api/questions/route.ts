@@ -101,7 +101,7 @@ export async function DELETE(request: NextRequest) {
     }
     
     const questions = JSON.parse(await fs.readFile(QUESTIONS_FILE, 'utf-8'));
-    const updatedQuestions = questions.filter(q => q.id !== id);
+    const updatedQuestions = questions.filter((q: { id: string; }) => q.id !== id);
     
     if (questions.length === updatedQuestions.length) {
       return NextResponse.json(

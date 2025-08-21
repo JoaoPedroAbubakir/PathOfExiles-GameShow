@@ -84,7 +84,7 @@ export default function AdminInventoryPage() {
           </div>
         ) : (
           <div className="bg-gray-900 p-6 rounded-lg">
-            <InventoryManager items={items} onUpdate={handleItemsUpdate} />
+            <InventoryManager />
             
             <div className="mt-8">
               <h2 className="text-lg font-semibold text-white mb-4">Preview</h2>

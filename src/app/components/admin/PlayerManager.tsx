@@ -40,7 +40,7 @@ import { InventoryManager } from './InventoryManager';
       console.error('Error uploading file:', error);
       alert('Failed to upload image');
     } finally {
-      setUploadingIcon({ file: null });
+      //setUploadingIcon({ file: null });
     }
   };
 

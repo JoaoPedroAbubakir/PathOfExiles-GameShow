@@ -137,7 +137,7 @@ export default function AdminPage() {
           {activeTab === 'questions' && <QuestionManager />}
           {activeTab === 'players' && <PlayerManager />}
           {activeTab === 'users' && auth.role === 'admin' && <UserManager currentUser={auth} />}
-          {activeTab === 'inventory' && <InventoryManager items={[]} onUpdate={() => {}} />}
+          {activeTab === 'inventory' && <InventoryManager />}
         </div>
       </div>
     </main>
