@@ -1,0 +1,270 @@
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import { Player } from '@/app/types/player';
+import Image from 'next/image';
+import { IconSelector } from './IconSelector';
+
+export const PlayerManager: React.FC = () => {
+  const [players, setPlayers] = useState<Player[]>([]);
+  const [newPlayer, setNewPlayer] = useState({ name: '', icon: '/vercel.svg' });
+  const [editingPlayer, setEditingPlayer] = useState<{id: string, name: string, icon: string} | null>(null);
+  const [pointsName, setPointsName] = useState('points');
+  const [settings, setSettings] = useState<{ pointsName: string }>({ pointsName: 'points' });
+
+  useEffect(() => {
+    fetchPlayers();
+    fetchSettings();
+  }, []);
+
+  const fetchSettings = async () => {
+    try {
+      const response = await fetch('/api/settings');
+      if (response.ok) {
+        const data = await response.json();
+        setSettings(data);
+        setPointsName(data.pointsName || 'points');
+      }
+    } catch (error) {
+      console.error('Error fetching settings:', error);
+    }
+  };
+
+  const saveSettings = async () => {
+    try {
+      const response = await fetch('/api/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...settings, pointsName }),
+      });
+      if (response.ok) {
+        alert('Settings saved successfully!');
+      }
+    } catch (error) {
+      console.error('Error saving settings:', error);
+      alert('Failed to save settings');
+    }
+  };
+
+  const fetchPlayers = async () => {
+    try {
+      const response = await fetch('/api/players');
+      if (response.ok) {
+        const data = await response.json();
+        setPlayers(data);
+      }
+    } catch (error) {
+      console.error('Error fetching players:', error);
+    }
+  };
+
+  const addPlayer = async () => {
+    if (!newPlayer.name.trim()) return;
+    if (players.length >= 10) {
+      alert('Maximum 10 players allowed');
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/players', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newPlayer),
+      });
+
+      if (response.ok) {
+        await fetchPlayers();
+        setNewPlayer({ name: '', icon: '/vercel.svg' });
+      } else {
+        const data = await response.json();
+        alert(data.error || 'Failed to add player');
+      }
+    } catch (error) {
+      console.error('Error adding player:', error);
+    }
+  };
+
+  const updatePlayer = async (id: string, updates: Partial<Player>) => {
+    try {
+      const response = await fetch('/api/players', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, ...updates }),
+      });
+
+      if (response.ok) {
+        await fetchPlayers();
+        if (editingPlayer?.id === id) {
+          setEditingPlayer(null);
+        }
+      }
+    } catch (error) {
+      console.error('Error updating player:', error);
+    }
+  };
+
+  const removePlayer = async (id: string) => {
+    try {
+      const response = await fetch(`/api/players?id=${id}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        await fetchPlayers();
+      }
+    } catch (error) {
+      console.error('Error removing player:', error);
+    }
+  };
+
+  return (
+    <div className="bg-gray-900 p-6 rounded-lg space-y-6">
+      <h2 className="text-xl font-semibold text-white mb-4">Player Management</h2>
+      
+      {/* Points Name Setting */}
+      <div className="space-y-2">
+        <div className="flex gap-4 items-end">
+          <div className="flex-1">
+            <label className="block text-sm font-medium text-gray-400 mb-1">
+              Points Name
+            </label>
+            <input
+              type="text"
+              value={pointsName}
+              onChange={(e) => setPointsName(e.target.value)}
+              className="w-full px-3 py-2 bg-gray-800 text-white rounded"
+              placeholder="e.g., chaos"
+            />
+          </div>
+          <button
+            onClick={saveSettings}
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          >
+            Save Points Name
+          </button>
+        </div>
+      </div>
+      
+      {/* Add Player Form */}
+      <div className="space-y-4">
+        <div className="space-y-4">
+          <div className="flex items-center gap-2">
+            <input
+              type="text"
+              value={newPlayer.name}
+              onChange={(e) => setNewPlayer({ ...newPlayer, name: e.target.value })}
+              placeholder="Player name"
+              maxLength={20}
+              className="flex-1 px-3 py-2 bg-gray-700 text-white rounded"
+            />
+            <button
+              onClick={addPlayer}
+              disabled={players.length >= 10}
+              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
+            >
+              Add Player
+            </button>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-400 mb-2">Select Icon</label>
+            <IconSelector
+              selectedIcon={newPlayer.icon}
+              onSelect={(icon) => setNewPlayer({ ...newPlayer, icon })}
+              className="w-fit"
+            />
+          </div>
+        </div>
+
+        {/* Player List */}
+        <div className="space-y-4">
+          {players.map((player) => (
+            <div key={player.id} className="flex items-center gap-4 p-4 bg-gray-800 rounded-lg">
+              <div className="flex items-center gap-2 flex-1">
+                <div className="relative w-8 h-8">
+                  <Image
+                    src={player.icon}
+                    alt={`${player.name}'s icon`}
+                    fill
+                    className="object-contain"
+                    sizes="32px"
+                  />
+                </div>
+                {editingPlayer?.id === player.id ? (
+                  <div className="flex-1 space-y-4">
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={editingPlayer.name}
+                        onChange={(e) => setEditingPlayer({ ...editingPlayer, name: e.target.value })}
+                        className="flex-1 px-3 py-2 bg-gray-700 text-white rounded ring-1 ring-blue-500"
+                        maxLength={20}
+                        autoFocus
+                      />
+                      <button
+                        onClick={() => {
+                          if (editingPlayer.name.trim()) {
+                            updatePlayer(player.id, { 
+                              name: editingPlayer.name.trim(),
+                              icon: editingPlayer.icon 
+                            });
+                          }
+                        }}
+                        className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
+                      >
+                        Save
+                      </button>
+                      <button
+                        onClick={() => setEditingPlayer(null)}
+                        className="px-3 py-1 bg-gray-600 text-white rounded hover:bg-gray-700"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-400 mb-2">Change Icon</label>
+                      <IconSelector
+                        selectedIcon={editingPlayer.icon}
+                        onSelect={(icon) => setEditingPlayer({ ...editingPlayer, icon })}
+                        className="w-fit"
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <div
+                    className="flex-1 px-3 py-2 bg-gray-700 text-white rounded cursor-pointer hover:bg-gray-600"
+                    onClick={() => setEditingPlayer({ id: player.id, name: player.name, icon: player.icon })}
+                  >
+                    {player.name}
+                  </div>
+                )}
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => updatePlayer(player.id, { score: player.score - 1 })}
+                  className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+                >
+                  -
+                </button>
+                <span className="text-white min-w-[3ch] text-center">
+                  {player.score} {pointsName}
+                </span>
+                <button
+                  onClick={() => updatePlayer(player.id, { score: player.score + 1 })}
+                  className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
+                >
+                  +
+                </button>
+                <button
+                  onClick={() => removePlayer(player.id)}
+                  className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+                >
+                  ×
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};

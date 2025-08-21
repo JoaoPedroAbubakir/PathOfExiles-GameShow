@@ -1,0 +1,194 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { GameBoard } from './components/game/GameBoard';
+import { Scoreboard } from './components/Scoreboard';
+import { ImageModal } from './components/ImageModal';
+import { Settings, Round, Question } from './types/game';
+
+export default function Home() {
+  const [settings, setSettings] = useState<Settings>({
+    pointsName: 'points',
+    currentRound: '',
+    rounds: []
+  });
+  const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
+  const [revealedTiles, setRevealedTiles] = useState<number[]>([]);
+  const [answer, setAnswer] = useState('');
+  const [showImage, setShowImage] = useState(false);
+  const [currentRound, setCurrentRound] = useState<Round | null>(null);
+
+  const handleRoundChange = async (roundId: string) => {
+    if (!roundId) return;
+
+    try {
+      const response = await fetch('/api/settings', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...settings,
+          currentRound: roundId
+        })
+      });
+
+      if (response.ok) {
+        const selectedRound = settings.rounds.find(r => r.id === roundId);
+        if (selectedRound) {
+          setCurrentRound(selectedRound);
+          setRevealedTiles([]);
+        }
+      }
+    } catch (error) {
+      console.error('Error updating round:', error);
+    }
+  };
+
+  // Function to load game data
+  const loadGameData = async () => {
+    try {
+      const [settingsData, roundsData] = await Promise.all([
+        fetch('/api/settings').then(res => res.json()),
+        fetch('/api/rounds').then(res => res.json())
+      ]);
+
+      setSettings({
+        ...settingsData,
+        rounds: roundsData
+      });
+
+      if (roundsData.length > 0) {
+        const round = roundsData.find((r: Round) => r.id === settingsData.currentRound) || roundsData[0];
+        setCurrentRound(round);
+      } else {
+        setCurrentRound(null);
+      }
+    } catch (error) {
+      console.error('Error loading game data:', error);
+    }
+  };
+
+  // Load initial game data
+  useEffect(() => {
+    loadGameData();
+  }, []);
+
+  // Setup event listener for round updates
+  useEffect(() => {
+    const eventSource = new EventSource('/api/rounds/events');
+
+    eventSource.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      if (data.type === 'roundDeleted' || data.type === 'roundUpdated' || data.type === 'roundCreated') {
+        loadGameData();
+      }
+    };
+
+    return () => {
+      eventSource.close();
+    };
+  }, []);
+
+  const handleTileClick = (tileNumber: number) => {
+    if (!currentRound?.activeQuestions) return;
+    const question = currentRound.activeQuestions.find(q => q.tileNumber === tileNumber);
+    if (question) {
+      setCurrentQuestion(question);
+      setShowImage(!!question.imageUrl);
+    }
+  };
+
+  const handleAnswer = (submittedAnswer: string) => {
+    if (!currentQuestion?.answer) return;
+
+    const normalizedSubmitted = submittedAnswer.toLowerCase().trim();
+    const normalizedAnswer = currentQuestion.answer.toLowerCase().trim();
+
+    if (normalizedSubmitted === normalizedAnswer) {
+      setRevealedTiles(prev => [...prev, Number(currentQuestion.id)]);
+      setCurrentQuestion(null);
+      setAnswer('');
+    }
+  };
+
+  return (
+    <main className="min-h-screen bg-gray-950 p-8">
+      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="md:col-span-2">
+          {currentRound ? (
+            <div className="space-y-4">
+              <div className="flex items-center gap-4">
+                <h2 className="text-xl font-semibold text-white whitespace-nowrap">Round:</h2>
+                <select
+                  value={currentRound.id}
+                  onChange={(e) => handleRoundChange(e.target.value)}
+                  className="flex-1 px-3 py-2 bg-gray-800 text-white rounded border border-gray-700"
+                >
+                  {settings.rounds.map((round) => (
+                    <option key={round.id} value={round.id}>
+                      {round.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <GameBoard
+                tileCount={currentRound.tileCount}
+                backgroundImage={currentRound.backgroundImage}
+                onTileClick={handleTileClick}
+                revealedTiles={revealedTiles}
+              />
+            </div>
+          ) : (
+            <div className="bg-gray-900 p-6 rounded-lg">
+              <p className="text-gray-400">No rounds available</p>
+            </div>
+          )}
+        </div>
+        <div className="space-y-4">
+          <Scoreboard className="mb-4" />
+          
+          {currentQuestion ? (
+            <div className="bg-gray-900 p-6 rounded-lg">
+              <h3 className="text-xl font-semibold text-white mb-4">{currentQuestion.text}</h3>
+              <div className="flex flex-col gap-4">
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={answer}
+                    onChange={(e) => setAnswer(e.target.value)}
+                    className="flex-1 px-3 py-2 bg-gray-800 text-white rounded"
+                    placeholder="Enter your answer..."
+                  />
+                  <button
+                    onClick={() => handleAnswer(answer)}
+                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                  >
+                    Submit
+                  </button>
+                </div>
+                {currentQuestion.imageUrl && (
+                  <button
+                    onClick={() => setShowImage(true)}
+                    className="w-full px-4 py-2 bg-gray-800 text-white rounded hover:bg-gray-700"
+                  >
+                    View Image
+                  </button>
+                )}
+              </div>
+            </div>
+          ) : (
+            <div className="bg-gray-900 p-6 rounded-lg">
+              <p className="text-gray-400">Select a tile to reveal a question</p>
+            </div>
+          )}
+          
+          {showImage && currentQuestion?.imageUrl && (
+            <ImageModal
+              imageUrl={currentQuestion.imageUrl}
+              onClose={() => setShowImage(false)}
+            />
+          )}
+        </div>
+      </div>
+    </main>
+  );
+}

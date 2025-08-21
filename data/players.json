@@ -1,0 +1,22 @@
+[
+  {
+    "id": "1755779438296",
+    "name": "Nerd B",
+    "score": -1,
+    "icon": "/vercel.svg"
+  },
+  {
+    "id": "1755790810642",
+    "name": "Player 2",
+    "score": 1,
+    "icon": "/vercel.svg",
+    "inventory": []
+  },
+  {
+    "id": "1755791233983",
+    "name": "Player 3",
+    "score": 0,
+    "icon": "/vercel.svg",
+    "inventory": []
+  }
+]

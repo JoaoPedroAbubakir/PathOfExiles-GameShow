@@ -1,0 +1,68 @@
+'use client';
+
+import { useState } from 'react';
+import { ImageGrid } from './components/ImageGrid';
+import { Scoreboard } from './components/Scoreboard';
+import { QuestionDisplay } from './components/QuestionDisplay';
+
+export default function Home() {
+  const [gameState, setGameState] = useState({
+    currentQuestion: {
+      id: '1',
+      text: 'What currency is used to reroll the values of a rare item?',
+      answer: 'chaos',
+      imageUrl: '/globe.svg'
+    },
+    revealedPanels: Array(16).fill(false),
+    players: [
+      { id: '1', name: 'Player 1', currency: 0 },
+      { id: '2', name: 'Player 2', currency: 0 },
+      { id: '3', name: 'Player 3', currency: 0 }
+    ],
+    gridSize: { rows: 4, cols: 4 }
+  });
+
+  const handleAnswer = (answer: string) => {
+    if (answer.toLowerCase() === gameState.currentQuestion.answer.toLowerCase()) {
+      const updatedPlayers = gameState.players.map((player, index) => 
+        index === 0 ? { ...player, currency: player.currency + 1 } : player
+      );
+      setGameState(prev => ({
+        ...prev,
+        players: updatedPlayers
+      }));
+    }
+  };
+
+  const handlePanelClick = (index: number) => {
+    if (gameState.revealedPanels[index]) return;
+    setGameState(prev => ({
+      ...prev,
+      revealedPanels: prev.revealedPanels.map((panel, i) => 
+        i === index ? true : panel
+      )
+    }));
+  };
+
+  return (
+    <main className="min-h-screen bg-gray-950 p-8">
+      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="md:col-span-2">
+          <ImageGrid
+            imageUrl={gameState.currentQuestion.imageUrl}
+            gridSize={gameState.gridSize}
+            revealedPanels={gameState.revealedPanels}
+            onPanelClick={handlePanelClick}
+          />
+        </div>
+        <div className="space-y-4">
+          <Scoreboard players={gameState.players} />
+          <QuestionDisplay
+            question={gameState.currentQuestion}
+            onAnswer={handleAnswer}
+          />
+        </div>
+      </div>
+    </main>
+  );
+}

@@ -1,0 +1,168 @@
+{
+  "tileCount": 4,
+  "backgroundImage": "/uploads/1755781493113-momoayasegruvbox.png",
+  "pointsName": "Points",
+  "rounds": [
+    {
+      "name": "Round 1",
+      "tileCount": 4,
+      "backgroundImage": "",
+      "questionPoolId": "1755784330324",
+      "id": "1755785063083",
+      "order": 0,
+      "activeQuestions": [
+        {
+          "id": "17557850480288yhzt7lpa0o",
+          "text": "Question 18",
+          "answer": "1",
+          "imageUrl": "/uploads/1755784962696-bunny.png",
+          "poolId": "1755784330324"
+        },
+        {
+          "id": "1755785048028wc2y96ql3w",
+          "text": "Question 4",
+          "answer": "1",
+          "imageUrl": "/uploads/1755784962696-bunny.png",
+          "poolId": "1755784330324"
+        },
+        {
+          "id": "17557850480284curilulupr",
+          "text": "Question 15",
+          "answer": "1",
+          "imageUrl": "/uploads/1755784962696-bunny.png",
+          "poolId": "1755784330324"
+        },
+        {
+          "id": "1755785048028rgp8wq3xrhm",
+          "text": "Question 6",
+          "answer": "1",
+          "imageUrl": "/uploads/1755784962696-bunny.png",
+          "poolId": "1755784330324"
+        }
+      ]
+    },
+    {
+      "name": "Round 2",
+      "tileCount": 16,
+      "backgroundImage": "/uploads/1755785779442-SPOILERIMG2034.jpg",
+      "questionPoolId": "1755784330324",
+      "id": "1755785787644",
+      "order": 1,
+      "activeQuestions": [
+        {
+          "id": "1755785048028iatiwuy2i7",
+          "text": "Question 1",
+          "answer": "1",
+          "imageUrl": "/uploads/1755784962696-bunny.png",
+          "poolId": "1755784330324"
+        },
+        {
+          "id": "17557850480280vyqtz36fmdb",
+          "text": "Question 8",
+          "answer": "1",
+          "imageUrl": "/uploads/1755784962696-bunny.png",
+          "poolId": "1755784330324"
+        },
+        {
+          "id": "17557850480289v8ja6zwalc",
+          "text": "Question 20",
+          "answer": "1",
+          "imageUrl": "/uploads/1755784962696-bunny.png",
+          "poolId": "1755784330324"
+        },
+        {
+          "id": "17557850480283vf7lbpi2y5",
+          "text": "Question 14",
+          "answer": "1",
+          "imageUrl": "/uploads/1755784962696-bunny.png",
+          "poolId": "1755784330324"
+        },
+        {
+          "id": "17557850480287jtbdnlrf9u",
+          "text": "Question 13",
+          "answer": "1",
+          "imageUrl": "/uploads/1755784962696-bunny.png",
+          "poolId": "1755784330324"
+        },
+        {
+          "id": "1755785048028az7xri138ao",
+          "text": "Question 16",
+          "answer": "1",
+          "imageUrl": "/uploads/1755784962696-bunny.png",
+          "poolId": "1755784330324"
+        },
+        {
+          "id": "1755785048028d5lmw9r2a36",
+          "text": "Question 5",
+          "answer": "1",
+          "imageUrl": "/uploads/1755784962696-bunny.png",
+          "poolId": "1755784330324"
+        },
+        {
+          "id": "17557850480286e723rzvkga",
+          "text": "Question 2",
+          "answer": "1",
+          "imageUrl": "/uploads/1755784962696-bunny.png",
+          "poolId": "1755784330324"
+        },
+        {
+          "id": "1755785048028qx0q1bu4i7i",
+          "text": "Question 9",
+          "answer": "1",
+          "imageUrl": "/uploads/1755784962696-bunny.png",
+          "poolId": "1755784330324"
+        },
+        {
+          "id": "1755785048028rm8glkz0cs",
+          "text": "Question 10",
+          "answer": "1",
+          "imageUrl": "/uploads/1755784962696-bunny.png",
+          "poolId": "1755784330324"
+        },
+        {
+          "id": "1755785048028b6n3bdglqzj",
+          "text": "Question 7",
+          "answer": "1",
+          "imageUrl": "/uploads/1755784962696-bunny.png",
+          "poolId": "1755784330324"
+        },
+        {
+          "id": "1755785048028mu8ub5u6db9",
+          "text": "Question 3",
+          "answer": "1",
+          "imageUrl": "/uploads/1755784962696-bunny.png",
+          "poolId": "1755784330324"
+        },
+        {
+          "id": "1755785048028gfaj4xzztv5",
+          "text": "Question 17",
+          "answer": "1",
+          "imageUrl": "/uploads/1755784962696-bunny.png",
+          "poolId": "1755784330324"
+        },
+        {
+          "id": "1755785048028e6v2zb09p75",
+          "text": "Question 19",
+          "answer": "1",
+          "imageUrl": "/uploads/1755784962696-bunny.png",
+          "poolId": "1755784330324"
+        },
+        {
+          "id": "1755785048028u7etuj1ybd",
+          "text": "Question 12",
+          "answer": "1",
+          "imageUrl": "/uploads/1755784962696-bunny.png",
+          "poolId": "1755784330324"
+        },
+        {
+          "id": "1755785048028olowt3k4wdg",
+          "text": "Question 11",
+          "answer": "1",
+          "imageUrl": "/uploads/1755784962696-bunny.png",
+          "poolId": "1755784330324"
+        }
+      ]
+    }
+  ],
+  "currentRound": "1755796240060"
+}
